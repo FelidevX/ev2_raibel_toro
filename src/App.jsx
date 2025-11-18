@@ -28,13 +28,32 @@ function App() {
   };
 
   const comprobarJugada = () => {
-    const jugadaCompleta = [...jugada.trio, ...jugada.escala];
+    const escalaPresente = jugada.escala.every(carta => cartas.includes(carta));
 
-    const todasCartasPresentes = jugadaCompleta.every(carta => cartas.includes(carta));
-    
-    if (todasCartasPresentes) {
-      setResultado("1 Escala y 1 Trío");
-      addJugada(jugadaCompleta);
+    if (escalaPresente) {
+
+      const cartasRestantes = cartas.filter(carta => !jugada.escala.includes(carta));
+      
+
+      const conteoNumeros = {};
+      cartasRestantes.forEach(carta => {
+        const numero = carta.charAt(0);
+        conteoNumeros[numero] = (conteoNumeros[numero] || 0) + 1;
+      });
+      
+
+      const hayTrio = Object.values(conteoNumeros).some(count => count === 3);
+      
+      if (hayTrio) {
+        const numeroTrio = Object.keys(conteoNumeros).find(numero => conteoNumeros[numero] === 3);
+        const cartasTrio = cartasRestantes.filter(carta => carta.charAt(0) === numeroTrio);
+        
+        setResultado("1 Escala y 1 Trío");
+        const jugadaCompleta = [...jugada.escala, ...cartasTrio];
+        addJugada(jugadaCompleta);
+      } else {
+        setResultado("NO FORMA JUEGO :C");
+      }
     } else {
       setResultado("NO FORMA JUEGO :C");
     }
